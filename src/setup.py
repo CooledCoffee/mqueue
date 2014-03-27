@@ -16,7 +16,7 @@ setup(
     ],
     description='Simple queue based on mysql.',
     extras_require={
-        'test': ['fixtures'],
+        'test': ['fixtures2'],
     },
     install_requires=[
         'decorated',

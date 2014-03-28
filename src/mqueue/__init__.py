@@ -18,4 +18,5 @@ Delay = Delay
 task = Task
 cron = Cron
 
+init = util.init
 start = util.start

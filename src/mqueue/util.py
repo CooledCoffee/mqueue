@@ -62,20 +62,22 @@ def obj_to_path(obj):
     '''
     return obj.__module__ + '.' + obj.__name__
 
+def init(queue, dao):
+    from mqueue import db
+    import mqueue
+    mqueue.QUEUE = queue
+    db.dao = dao
+
 @log_enter('Starting queue ...')
 @log_return('Queue stopped.')
 @log_error('Queue failed.', exc_info=True)
 def start(queue, dao):
-    from mqueue import db
     from mqueue.scheduler import SchedulerThread
     from mqueue.worker import WorkerThread
-    import mqueue
     
+    init(queue, dao)
     modutil.load_tree('tasks')
     
-    mqueue.QUEUE = queue
-    db.dao = dao
-
     worker = WorkerThread()
     worker.start()
     scheduler = SchedulerThread()

@@ -18,7 +18,7 @@ class CheckAndRunTest(DbTest):
     def setUp(self):
         super(CheckAndRunTest, self).setUp()
         self.mox = self.useFixture(MoxFixture())
-        self.mox.mock(foo, 'enqueue')
+        self.mox.mock('scheduler_test.foo.enqueue')
         
     def test_overdue(self):
         # set up

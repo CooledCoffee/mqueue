@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from decorated import Function
 from decorated.base.context import Context, ctx, ContextError
 from loggingd import log_return
-from mqueue import db, util
+from mqueue import util
 from mqueue.db import Task as TaskModel
 import json
 import mqueue
@@ -28,8 +28,7 @@ class Task(Function):
             queue=mqueue.QUEUE,
             retries=0
         )
-        with db.dao.create_session() as session:  # @UndefinedVariable
-            session.add(model)
+        ctx.session.add(model)
             
 class Cron(Task):
     def is_overdue(self, last):

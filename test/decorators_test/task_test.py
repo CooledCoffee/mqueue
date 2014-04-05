@@ -26,7 +26,8 @@ class DelayTest(TestCase):
 class EnqueueTest(DbTest):
     def test_normal(self):
         # test
-        foo.enqueue(1, b=3)
+        with self.mysql.dao.SessionContext():
+            foo.enqueue(1, b=3)
         
         # verify
         with self.mysql.dao.create_session() as session:
@@ -40,8 +41,9 @@ class EnqueueTest(DbTest):
     def test_with_delay(self):
         # test
         delay = timedelta(minutes=5)
-        with Delay(delay):
-            foo.enqueue(1, b=3)
+        with self.mysql.dao.SessionContext():
+            with Delay(delay):
+                foo.enqueue(1, b=3)
         
         # verify
         with self.mysql.dao.create_session() as session:

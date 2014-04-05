@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime, timedelta
-from fixtures._fixtures.monkeypatch import MonkeyPatch
 from mqueue import worker
 from mqueue.db import Task as TaskModel
 from mqueue.decorators import Task

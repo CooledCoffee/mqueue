@@ -51,6 +51,7 @@ def _try_peek():
 def _run(task):
     try:
         _try_run(task)
+        ctx.session.delete(task)
     except:
         task.retries += 1
         task.eta = datetime.now() + _calc_delay(task.retries)
@@ -59,8 +60,8 @@ def _run(task):
 @log_return('Task {task.id} ({task.name}) succeeded.')
 @log_error('Failed to run task {task.id} ({task.name}).', exc_info=True)
 def _try_run(task):
-    func = util.obj_from_path(task.name)
-    args = json.loads(task.args)
-    func(**args)
-    ctx.session.delete(task)
-    
+    with db.dao.SessionContext():  # @UndefinedVariable
+        func = util.obj_from_path(task.name)
+        args = json.loads(task.args)
+        func(**args)
+        

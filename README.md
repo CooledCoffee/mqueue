@@ -31,16 +31,17 @@ Init the queue and enqueue the task:
 	import mqueue
 	import tasks
 	
-	dao = Dao('mysql://test:test@localhost/queue')
-    mqueue.init('test-queue', dao)
-	tasks.mail.enqueue('test@test.com', 'hello', 'This is a test mail.')
+    mqueue.init('test-queue')
+	dao = Dao('mysql://test:test@localhost/website')
+	with dao.SessionContext():
+	    tasks.mail.enqueue('test@test.com', 'hello', 'This is a test mail.')
 
 Now create a daemon module:
 
 	from sqlalchemy_dao import Dao
 	import mqueue
 	
-	dao = Dao('mysql://test:test@localhost/queue')
+	dao = Dao('mysql://test:test@localhost/website')
     mqueue.start('test-queue', dao)
     
 Start it with
@@ -75,6 +76,38 @@ A cron is a task that automatically enqueue itself according to its cron express
 Cron jobs cannot have arguments because there is no way to specify them.
 Besides, a cron job is enqueued according to its schedule,
 but there is no gurantee when the enqueued task will be processed.
+
+Transaction
+===========
+
+Transaction is a very powerful feature of databases.
+However, most queues do not support it.
+Even if they do, you end up with distributed transaction which is very nasty to handle.
+
+With MQueue, you can ensure that your database operations and queue operations are within the same transaction:
+
+	def create_user(name, email)
+	    dao = Dao('mysql://test:test@localhost/website')
+	    with dao.SessionContext() as ctx:
+	        user = User(name=name, email=email)
+	        ctx.session.add(user)
+	        tasks.mail.enqueue(email, 'Hello', 'Welcome on board.')
+	        
+When a task got run, the session context has been set up for you.
+You just have to use it in your code:
+
+	from decorated.base.context import ctx
+	from mqueue import task
+	
+	@task
+	def mail(email, subject, body):
+	    # send an email
+	    ...
+	    user = ctx.session.query(User).filter(User.email == email).one()
+	    user.email_sent = True
+	    
+Check out <a href="https://github.com/CooledCoffee/sqlalchemy-dao" target="_blank">SQLAlchemy-Dao</a>
+for more information about daos and session contexts.
 
 Author
 ======

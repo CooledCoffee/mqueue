@@ -14,9 +14,9 @@ def foo():
 def bar():
     pass
 
-class CheckAndRunTest(DbTest):
+class CheckTest(DbTest):
     def setUp(self):
-        super(CheckAndRunTest, self).setUp()
+        super(CheckTest, self).setUp()
         self.mox = self.useFixture(MoxFixture())
         self.mox.mock('scheduler_test.foo.enqueue')
         
@@ -29,7 +29,7 @@ class CheckAndRunTest(DbTest):
         with self.mox.record():
             foo.enqueue()
         with self.mox.replay():
-            scheduler._check_and_run(foo)
+            scheduler._check(foo)
         
     def test_not_overdue(self):
         # set up
@@ -38,11 +38,11 @@ class CheckAndRunTest(DbTest):
             
         # test
         with self.mox.replay():
-            scheduler._check_and_run(foo)
+            scheduler._check(foo)
             
     def test_first_time(self):
         with self.mox.record():
             foo.enqueue()
         with self.mox.replay():
-            scheduler._check_and_run(foo)
+            scheduler._check(foo)
             

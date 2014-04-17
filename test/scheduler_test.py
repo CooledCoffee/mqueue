@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
+from fixtures2 import DateTimeFixture
 from fixtures2.mox import MoxFixture
 from mqueue import scheduler
 from mqueue.db import Cron as CronModel
 from mqueue.decorators import Cron
-from testutil import DbTest
+from mqueue.scheduler import SchedulerThread
+from testutil import DbTest, TestCase
 
 @Cron('* * * * *')
 def foo():
@@ -13,6 +15,13 @@ def foo():
 @Cron('* * * * *')
 def bar():
     pass
+
+class IntervalTest(TestCase):
+    def test(self):
+        self.useFixture(DateTimeFixture('mqueue.scheduler.datetime', datetime(2000, 1, 1, 0, 0, 10)))
+        scheduler = SchedulerThread()
+        interval = scheduler._interval()
+        self.assertEqual(51, interval)
 
 class CheckTest(DbTest):
     def setUp(self):

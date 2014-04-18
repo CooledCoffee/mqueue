@@ -20,7 +20,7 @@ class Timer(Thread):
         
     def run(self):
         while not self._exiting:
-            self._sleep(self._interval())
+            self._sleep(self.interval)
             try:
                 self._run()
             except:
@@ -30,9 +30,6 @@ class Timer(Thread):
     def stop(self):
         self._exiting = True
         self.join()
-        
-    def _interval(self):
-        return self.interval
         
     def _run(self):
         raise NotImplemented()

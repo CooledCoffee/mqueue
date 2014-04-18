@@ -20,8 +20,7 @@ class IntervalTest(TestCase):
     def test(self):
         self.useFixture(DateTimeFixture('mqueue.scheduler.datetime', datetime(2000, 1, 1, 0, 0, 10)))
         scheduler = SchedulerThread()
-        interval = scheduler._interval()
-        self.assertEqual(51, interval)
+        self.assertEqual(51, scheduler.interval)
 
 class CheckTest(DbTest):
     def setUp(self):

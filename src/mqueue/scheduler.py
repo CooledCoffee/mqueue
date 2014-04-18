@@ -7,7 +7,8 @@ from mqueue.util import Timer
 import mqueue
 
 class SchedulerThread(Timer):
-    def _interval(self):
+    @property
+    def interval(self):
         return 60 - datetime.now().second + 1
     
     @log_error('Scheduler failed.', exc_info=True)

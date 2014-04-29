@@ -3,6 +3,11 @@ Introduction
 
 MQueue is a simple task queue implementation based on mysql.
 
+Installation
+============
+
+pip install mqueue
+
 Tasks
 =====
 

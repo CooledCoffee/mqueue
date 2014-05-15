@@ -11,13 +11,22 @@ import mqueue
 DELAY = 3
 
 class WorkerThread(Timer):
-    interval = 3
+    def __init__(self):
+        super(WorkerThread, self).__init__()
+        self._empty = False
+    
+    @property
+    def interval(self):
+        return 10 if self._empty else 0
     
     @log_error('Worker failed.', exc_info=True)
     def _run(self):
         with db.dao.SessionContext():  # @UndefinedVariable
             task = _peek()
-            if task is not None:
+            if task is None:
+                self._empty = True
+            else:
+                self._empty = False
                 _run(task)
 
 def _calc_delay(retries):

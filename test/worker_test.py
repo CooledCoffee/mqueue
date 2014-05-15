@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 from mqueue import worker
 from mqueue.db import Task as TaskModel
 from mqueue.decorators import Task
+from mqueue.worker import WorkerThread
 from testutil import DbTest
 import json
 
@@ -51,14 +52,15 @@ class RunTest(DbTest):
             session.add(TaskModel(args=json.dumps({'a': 1, 'b': 3}), eta=datetime(2000, 1, 1), name='worker_test.foo', queue='queue1', retries=0))
             
         # test
-        with self.mysql.dao.SessionContext() as ctx:
-            task = ctx.session.query(TaskModel).one()
-            worker._run(task)
-            
+        worker = WorkerThread()
+        worker._empty = True
+        worker._run()
+        
         # verify
         self.assertEqual(4, foo.result)
         with self.mysql.dao.create_session() as session:
             self.assertEqual(0, session.query(TaskModel).count())
+        self.assertFalse(worker._empty)
             
     def test_error(self):
         # set up
@@ -66,13 +68,24 @@ class RunTest(DbTest):
             session.add(TaskModel(args=json.dumps({'a': 1, 'b': 0}), eta=datetime(2000, 1, 1), name='queue_test.worker_test.foo', queue='queue1', retries=0))
             
         # test
-        with self.mysql.dao.SessionContext() as ctx:
-            task = ctx.session.query(TaskModel).one()
-            worker._run(task)
-            
+        worker = WorkerThread()
+        worker._empty = True
+        worker._run()
+        
         # verify
         with self.mysql.dao.create_session() as session:
             task = session.query(TaskModel).one()
             self.assertEqual(1, task.retries)
             self.assertAlmostNow(task.eta - timedelta(minutes=1))
             
+    def test_empty(self):
+        # test
+        worker = WorkerThread()
+        worker._empty = False
+        worker._run()
+        
+        # verify
+        with self.mysql.dao.create_session() as session:
+            self.assertEqual(0, session.query(TaskModel).count())
+        self.assertTrue(worker._empty)
+        

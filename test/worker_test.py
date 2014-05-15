@@ -44,7 +44,7 @@ class PeekTest(DbTest):
             task = worker._peek()
             self.assertIsNone(task)
             
-class RunTaskTest(DbTest):
+class RunTest(DbTest):
     def test_success(self):
         # set up
         with self.mysql.dao.create_session() as session:

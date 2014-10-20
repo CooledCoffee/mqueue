@@ -34,15 +34,25 @@ class Cron(Task):
     def is_overdue(self, last):
         delta = self._schedule.next(last)
         delta = timedelta(seconds=delta)
-        return last + delta < datetime.now()
+        overdue = last + delta < datetime.now()
+        if not overdue:
+            return False
+        if self._skip_if_scheduled:
+            cnt = ctx.session.query(TaskModel) \
+                    .filter(TaskModel.name == self.name) \
+                    .count()
+            if cnt > 0:
+                return False
+        return True
     
     def _decorate(self, func):
         crons.append(self)
         return super(Cron, self)._decorate(func)
     
-    def _init(self, schedule):
+    def _init(self, schedule, skip_if_scheduled=False):
         super(Cron, self)._init()
         self._schedule = CronTab(schedule)
+        self._skip_if_scheduled = skip_if_scheduled
     
 class Delay(Context):
     @staticmethod

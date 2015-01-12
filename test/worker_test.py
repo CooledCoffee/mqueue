@@ -4,7 +4,7 @@ from mqueue import worker
 from mqueue.db import Task as TaskModel
 from mqueue.decorators import Task
 from mqueue.worker import WorkerThread
-from testutil import DbTest
+from testutil import DbTestCase
 import json
 
 @Task
@@ -13,7 +13,7 @@ def foo(a, b=2):
         raise Exception()
     foo.result = a + b
 
-class PeekTest(DbTest):
+class PeekTest(DbTestCase):
     def test_queue(self):
         # set up
         with self.mysql.dao.create_session() as session:
@@ -45,7 +45,7 @@ class PeekTest(DbTest):
             task = worker._peek()
             self.assertIsNone(task)
             
-class RunTest(DbTest):
+class RunTest(DbTestCase):
     def test_success(self):
         # set up
         with self.mysql.dao.create_session() as session:

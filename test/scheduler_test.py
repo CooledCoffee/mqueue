@@ -7,7 +7,7 @@ from mqueue import scheduler
 from mqueue.db import Cron as CronModel
 from mqueue.decorators import Cron
 from mqueue.scheduler import SchedulerThread
-from testutil import DbTest, TestCase
+from testutil import DbTestCase, TestCase
 
 @Cron('* * * * *')
 def foo():
@@ -17,7 +17,7 @@ def foo():
 def bar():
     pass
 
-class CleanUpTest(DbTest):
+class CleanUpTest(DbTestCase):
     def test(self):
         # set up
         self.patches.patch('mqueue.QUEUE', 'queue1')
@@ -43,7 +43,7 @@ class IntervalTest(TestCase):
         scheduler = SchedulerThread()
         self.assertEqual(51, scheduler.interval)
 
-class CheckTest(DbTest):
+class CheckTest(DbTestCase):
     def setUp(self):
         super(CheckTest, self).setUp()
         self.mox = self.useFixture(MoxFixture())

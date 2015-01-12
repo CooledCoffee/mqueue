@@ -3,7 +3,7 @@ from datetime import timedelta
 from decorated.base.context import Context
 from mqueue.db import Task as TaskModel
 from mqueue.decorators import Task, Delay
-from testutil import DbTest, TestCase
+from testutil import DbTestCase, TestCase
 import json
 
 @Task
@@ -23,7 +23,7 @@ class DelayTest(TestCase):
     def test_no_context(self):
         self.assertEqual(timedelta(minutes=0), Delay.value())
 
-class EnqueueTest(DbTest):
+class EnqueueTest(DbTestCase):
     def test_normal(self):
         # test
         with self.mysql.dao.SessionContext():

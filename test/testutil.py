@@ -10,7 +10,7 @@ class TestCase(TestCase):
         super(TestCase, self).setUp()
         self.patches = self.useFixture(PatchesFixture())
         
-class DbTest(TestCase):
+class DbTestCase(TestCase):
     def assertAlmostNow(self, time):
         delta = abs(datetime.now() - time)
         if delta.seconds > 10:
@@ -18,7 +18,7 @@ class DbTest(TestCase):
             raise self.failureException(msg)
             
     def setUp(self):
-        super(DbTest, self).setUp()
+        super(DbTestCase, self).setUp()
         self.patches.patch('mqueue.QUEUE', 'queue1')
         path = os.path.join(os.path.dirname(__file__), 'queue.sql')
         self.mysql = self.useFixture(MysqlFixture([path], daos=['mqueue.db.dao']))

@@ -13,7 +13,6 @@ class SchedulerThread(Timer):
     
     @log_error('Scheduler failed.', exc_info=True)
     def _run(self):
-        _cleanup()
         for cron in decorators.crons:
             _check(cron)
     

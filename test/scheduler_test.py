@@ -31,11 +31,12 @@ class CleanUpTest(DbTestCase):
             session.add(CronModel(queue='queue1', name='tasks.cron1', last='2000-01-01'))
             session.add(CronModel(queue='queue1', name='tasks.cron2', last='2000-01-01'))
             session.add(CronModel(queue='queue1', name='tasks.cron4', last='2000-01-01'))
+            session.add(CronModel(queue='queue2', name='tasks.cron5', last='2000-01-01'))
             
         # test
         scheduler._cleanup()
         with self.mysql.dao.create_session() as session:
-            self.assertEqual(2, session.query(CronModel).count())
+            self.assertEqual(3, session.query(CronModel).count())
 
 class IntervalTest(TestCase):
     def test(self):

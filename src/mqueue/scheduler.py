@@ -28,7 +28,9 @@ def _check(cron):
 def _cleanup():
     valid_names = {cron.name for cron in decorators.crons}
     with db.dao.create_session() as session:  # @UndefinedVariable
-        crons = session.query(CronModel).all()
+        crons = session.query(CronModel) \
+                .filter(CronModel.queue == mqueue.QUEUE) \
+                .all()
         for cron in crons:
             if cron.name not in valid_names:
                 session.delete(cron)

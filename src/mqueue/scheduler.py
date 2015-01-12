@@ -13,6 +13,7 @@ class SchedulerThread(Timer):
     
     @log_error('Scheduler failed.', exc_info=True)
     def _run(self):
+        _cleanup()
         for cron in decorators.crons:
             _check(cron)
     
@@ -23,3 +24,11 @@ def _check(cron):
         if model.last is None or cron.is_overdue(model.last):
             cron.enqueue()
         model.last = datetime.now()
+
+def _cleanup():
+    valid_names = {cron.name for cron in decorators.crons}
+    with db.dao.create_session() as session:  # @UndefinedVariable
+        crons = session.query(CronModel).all()
+        for cron in crons:
+            if cron.name not in valid_names:
+                session.delete(cron)

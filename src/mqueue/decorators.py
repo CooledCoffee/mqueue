@@ -31,10 +31,10 @@ class Task(Function):
         ctx.session.add(model)
             
 class Cron(Task):
-    def is_overdue(self, last):
+    def is_overdue(self, now, last):
         delta = self._schedule.next(last)
         delta = timedelta(seconds=delta)
-        overdue = last + delta < datetime.now()
+        overdue = last + delta < now
         if not overdue:
             return False
         if self._skip_if_scheduled:

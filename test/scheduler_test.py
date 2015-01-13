@@ -32,22 +32,31 @@ class CheckTest(DbTestCase):
         with self.mox.record():
             foo.enqueue()
         with self.mox.replay():
-            scheduler._check(foo)
+            scheduler._check(foo, datetime(2000, 1, 2))
+        with self.mysql.dao.create_session() as session:
+            model = session.get(CronModel, 'queue1', 'scheduler_test.foo')
+            self.assertEqual(datetime(2000, 1, 2), model.last)
         
     def test_not_overdue(self):
         # set up
         with self.mysql.dao.create_session() as session:
-            session.add(CronModel(queue='queue1', name='scheduler_test.foo', last=datetime(2050, 1, 1)))
+            session.add(CronModel(queue='queue1', name='scheduler_test.foo', last=datetime(2000, 1, 1)))
             
         # test
         with self.mox.replay():
-            scheduler._check(foo)
+            scheduler._check(foo, datetime(2000, 1, 1, 0, 0, 10))
+        with self.mysql.dao.create_session() as session:
+            model = session.get(CronModel, 'queue1', 'scheduler_test.foo')
+            self.assertEqual(datetime(2000, 1, 1), model.last)
             
     def test_first_time(self):
         with self.mox.record():
             foo.enqueue()
         with self.mox.replay():
-            scheduler._check(foo)
+            scheduler._check(foo, datetime(2000, 1, 1))
+        with self.mysql.dao.create_session() as session:
+            model = session.get(CronModel, 'queue1', 'scheduler_test.foo')
+            self.assertEqual(datetime(2000, 1, 1), model.last)
             
 class IntervalTest(TestCase):
     def test(self):

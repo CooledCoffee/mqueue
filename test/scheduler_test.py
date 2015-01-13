@@ -17,33 +17,6 @@ def foo():
 def bar():
     pass
 
-class CleanUpTest(DbTestCase):
-    def test(self):
-        # set up
-        self.patches.patch('mqueue.QUEUE', 'queue1')
-        crons = [
-            Dict(name='tasks.cron1'),
-            Dict(name='tasks.cron2'),
-            Dict(name='tasks.cron3'),
-        ]
-        self.patches.patch('mqueue.decorators.crons', crons)
-        with self.mysql.dao.create_session() as session:
-            session.add(CronModel(queue='queue1', name='tasks.cron1', last='2000-01-01'))
-            session.add(CronModel(queue='queue1', name='tasks.cron2', last='2000-01-01'))
-            session.add(CronModel(queue='queue1', name='tasks.cron4', last='2000-01-01'))
-            session.add(CronModel(queue='queue2', name='tasks.cron5', last='2000-01-01'))
-            
-        # test
-        scheduler._cleanup()
-        with self.mysql.dao.create_session() as session:
-            self.assertEqual(3, session.query(CronModel).count())
-
-class IntervalTest(TestCase):
-    def test(self):
-        self.useFixture(DateTimeFixture('mqueue.scheduler.datetime', datetime(2000, 1, 1, 0, 0, 10)))
-        scheduler = SchedulerThread()
-        self.assertEqual(51, scheduler.interval)
-
 class CheckTest(DbTestCase):
     def setUp(self):
         super(CheckTest, self).setUp()
@@ -76,3 +49,30 @@ class CheckTest(DbTestCase):
         with self.mox.replay():
             scheduler._check(foo)
             
+class IntervalTest(TestCase):
+    def test(self):
+        self.useFixture(DateTimeFixture('mqueue.scheduler.datetime', datetime(2000, 1, 1, 0, 0, 10)))
+        scheduler = SchedulerThread()
+        self.assertEqual(51, scheduler.interval)
+
+class InitTest(DbTestCase):
+    def test(self):
+        # set up
+        self.patches.patch('mqueue.QUEUE', 'queue1')
+        crons = [
+            Dict(name='tasks.cron1'),
+            Dict(name='tasks.cron2'),
+            Dict(name='tasks.cron3'),
+        ]
+        self.patches.patch('mqueue.decorators.crons', crons)
+        with self.mysql.dao.create_session() as session:
+            session.add(CronModel(queue='queue1', name='tasks.cron1', last='2000-01-01'))
+            session.add(CronModel(queue='queue1', name='tasks.cron2', last='2000-01-01'))
+            session.add(CronModel(queue='queue1', name='tasks.cron4', last='2000-01-01'))
+            session.add(CronModel(queue='queue2', name='tasks.cron5', last='2000-01-01'))
+            
+        # test
+        scheduler = SchedulerThread()
+        scheduler._init()
+        with self.mysql.dao.create_session() as session:
+            self.assertEqual(3, session.query(CronModel).count())

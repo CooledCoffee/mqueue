@@ -5,6 +5,7 @@ from loggingd import log_enter, log_error, log_return
 from mqueue import db, util
 from mqueue.db import Task
 from mqueue.util import Timer
+import doctest
 import json
 import mqueue
 
@@ -36,10 +37,10 @@ def _calc_delay(retries):
     >>> _calc_delay(2).total_seconds()
     300.0
     >>> _calc_delay(10).total_seconds()
-    86400.0
+    43200.0
     '''
     countdown = 60 * pow(5, retries - 1)
-    seconds = min(countdown, 86400)
+    seconds = min(countdown, 43200)
     return timedelta(seconds=seconds)
 
 def _peek():
@@ -74,3 +75,6 @@ def _try_run(task):
         args = json.loads(task.args)
         func(**args)
         
+if __name__ == '__main__':
+    doctest.testmod()
+    

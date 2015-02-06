@@ -22,12 +22,13 @@ class IsOverdueTest(DbTestCase):
         @Cron('*/5 * * * *')
         def foo():
             pass
-        self.assertTrue(foo.is_overdue(datetime(2000, 1, 2), datetime(2000, 1, 1)))
-        self.assertFalse(foo.is_overdue(datetime(2000, 1, 1, 0, 0, 10), datetime(2000, 1, 1)))
+        with self.mysql.dao.SessionContext():
+            self.assertTrue(foo.is_overdue(datetime(2000, 1, 2), datetime(2000, 1, 1)))
+            self.assertFalse(foo.is_overdue(datetime(2000, 1, 1, 0, 0, 10), datetime(2000, 1, 1)))
         
-    def test_skip_if_scheduled(self):
+    def test_scheduled(self):
         # set up
-        @Cron('*/5 * * * *', skip_if_scheduled=True)
+        @Cron('*/5 * * * *')
         def foo():
             pass
         with self.mysql.dao.create_session() as session:
@@ -36,4 +37,16 @@ class IsOverdueTest(DbTestCase):
         # test
         with self.mysql.dao.SessionContext():
             self.assertFalse(foo.is_overdue(datetime(2000, 1, 2), datetime(2000, 1, 1)))
+            
+    def test_no_skip(self):
+        # set up
+        @Cron('*/5 * * * *', skip_if_scheduled=False)
+        def foo():
+            pass
+        with self.mysql.dao.create_session() as session:
+            session.add(Task(args='{}', eta=datetime(2000, 1, 1), name='decorators_test.cron_test.foo', queue='queue1', retries=0))
+            
+        # test
+        with self.mysql.dao.SessionContext():
+            self.assertTrue(foo.is_overdue(datetime(2000, 1, 2), datetime(2000, 1, 1)))
         

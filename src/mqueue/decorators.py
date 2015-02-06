@@ -49,7 +49,7 @@ class Cron(Task):
         crons.append(self)
         return super(Cron, self)._decorate(func)
     
-    def _init(self, schedule, skip_if_scheduled=False):
+    def _init(self, schedule, skip_if_scheduled=True):
         super(Cron, self)._init()
         self._schedule = CronTab(schedule)
         self._skip_if_scheduled = skip_if_scheduled

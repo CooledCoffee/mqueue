@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
+from decorated import ignore_error
 from loggingd import log_error
 from mqueue import db, decorators
 from mqueue.db import Cron as CronModel
@@ -11,6 +12,7 @@ class SchedulerThread(Timer):
     def interval(self):
         return 60 - datetime.now().second + 1
     
+    @ignore_error
     def _init(self):
         valid_names = {cron.name for cron in decorators.crons}
         with db.dao.create_session() as session:  # @UndefinedVariable

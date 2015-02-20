@@ -19,7 +19,7 @@ setup(
         'test': ['fixtures2'],
     },
     install_requires=[
-        'decorated',
+        'decorated >= 1.5.2',
     ],
     packages=[
         'mqueue',

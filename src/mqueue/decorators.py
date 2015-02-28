@@ -9,6 +9,7 @@ from mqueue.db import Task as TaskModel
 import json
 import mqueue
 
+NO_DELAY = timedelta(minutes=0)
 crons = []
 
 class Task(Function):
@@ -57,12 +58,12 @@ class Cron(Task):
 class Delay(Context):
     @staticmethod
     def value():
-        zero_delay = timedelta(minutes=0)
         try:
-            return ctx.dict().get('delay', zero_delay)
+            return ctx.dict().get('mqueue.delay', NO_DELAY)
         except ContextError:
-            return zero_delay
+            return NO_DELAY
     
     def __init__(self, delay):
-        super(Delay, self).__init__(delay=delay)
+        super(Delay, self).__init__()
+        self['mqueue.delay'] = delay
         

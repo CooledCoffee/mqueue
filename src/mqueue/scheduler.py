@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
-from decorated import ignore_error
-from loggingd import log_error
+from loggingd import log_error, log_and_ignore_error
 from mqueue import db, decorators
 from mqueue.db import Cron as CronModel
 from mqueue.util import Timer
@@ -12,7 +11,7 @@ class SchedulerThread(Timer):
     def interval(self):
         return 60 - datetime.now().second + 1
     
-    @ignore_error
+    @log_and_ignore_error('Failed to clean cron table.')
     def _init(self):
         valid_names = {cron.name for cron in decorators.crons}
         with db.dao.create_session() as session:  # @UndefinedVariable

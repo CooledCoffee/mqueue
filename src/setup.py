@@ -20,6 +20,7 @@ setup(
     },
     install_requires=[
         'decorated >= 1.5.2',
+        'loggingd',
     ],
     packages=[
         'mqueue',

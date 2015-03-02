@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from crontab import CronTab
 from datetime import datetime, timedelta
 from decorated import Function
 from decorated.base.context import Context, ctx, ContextError

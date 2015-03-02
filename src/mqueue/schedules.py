@@ -138,10 +138,12 @@ class Weekday(CronSchedule):
     '''
     >>> Weekday()._expression
     '0 0 * * 1-5'
+    >>> Weekday(12)._expression
+    '0 12 * * 1-5'
     '''
     
-    def __init__(self):
-        super(Weekday, self).__init__('0 0 * * 1-5')
+    def __init__(self, hour=0):
+        super(Weekday, self).__init__('0 %d * * 1-5' % hour)
         
 if __name__ == '__main__':
     doctest.testmod()

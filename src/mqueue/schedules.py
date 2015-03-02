@@ -36,12 +36,8 @@ class CronSchedule(Schedule):
     
 class Minutely(CronSchedule):
     '''
-    >>> from datetime import datetime
-    >>> schedule = Minutely()
-    >>> schedule.is_overdue(datetime(2000, 1, 1, 0, 1, 0), datetime(2000, 1, 1, 0, 0, 0))
-    True
-    >>> schedule.is_overdue(datetime(2000, 1, 1, 0, 0, 30), datetime(2000, 1, 1, 0, 0, 0))
-    False
+    >>> Minutely()._expression
+    '* * * * *'
     '''
     
     def __init__(self):
@@ -49,19 +45,10 @@ class Minutely(CronSchedule):
         
 class Hourly(CronSchedule):
     '''
-    >>> from datetime import datetime
-    
-    >>> schedule = Hourly()
-    >>> schedule.is_overdue(datetime(2000, 1, 1, 1, 0, 0), datetime(2000, 1, 1, 0, 0, 0))
-    True
-    >>> schedule.is_overdue(datetime(2000, 1, 1, 0, 30, 0), datetime(2000, 1, 1, 0, 0, 0))
-    False
-    
-    >>> schedule = Hourly(30)
-    >>> schedule.is_overdue(datetime(2000, 1, 1, 1, 30, 0), datetime(2000, 1, 1, 0, 30, 0))
-    True
-    >>> schedule.is_overdue(datetime(2000, 1, 1, 1, 0, 0), datetime(2000, 1, 1, 0, 30, 0))
-    False
+    >>> Hourly()._expression
+    '0 * * * *'
+    >>> Hourly(30)._expression
+    '30 * * * *'
     '''
     
     def __init__(self, minute=0):
@@ -69,19 +56,10 @@ class Hourly(CronSchedule):
         
 class Daily(CronSchedule):
     '''
-    >>> from datetime import datetime
-    
-    >>> schedule = Daily()
-    >>> schedule.is_overdue(datetime(2000, 1, 2, 0, 0, 0), datetime(2000, 1, 1, 0, 0, 0))
-    True
-    >>> schedule.is_overdue(datetime(2000, 1, 1, 12, 0, 0), datetime(2000, 1, 1, 0, 0, 0))
-    False
-    
-    >>> schedule = Daily(12)
-    >>> schedule.is_overdue(datetime(2000, 1, 2, 12, 0, 0), datetime(2000, 1, 1, 12, 0, 0))
-    True
-    >>> schedule.is_overdue(datetime(2000, 1, 1, 1, 0, 0), datetime(2000, 1, 1, 12, 0, 0))
-    False
+    >>> Daily()._expression
+    '0 0 * * *'
+    >>> Daily(12)._expression
+    '0 12 * * *'
     '''
     
     def __init__(self, hour=0):
@@ -89,19 +67,10 @@ class Daily(CronSchedule):
         
 class Weekly(CronSchedule):
     '''
-    >>> from datetime import datetime
-    
-    >>> schedule = Weekly()
-    >>> schedule.is_overdue(datetime(2000, 1, 10, 0, 0, 0), datetime(2000, 1, 3, 0, 0, 0))
-    True
-    >>> schedule.is_overdue(datetime(2000, 1, 6, 0, 0, 0), datetime(2000, 1, 3, 0, 0, 0))
-    False
-    
-    >>> schedule = Weekly(3)
-    >>> schedule.is_overdue(datetime(2000, 1, 13, 0, 0, 0), datetime(2000, 1, 6, 0, 0, 0))
-    True
-    >>> schedule.is_overdue(datetime(2000, 1, 10, 0, 0, 0), datetime(2000, 1, 6, 0, 0, 0))
-    False
+    >>> Weekly()._expression
+    '0 0 * * 0'
+    >>> Weekly(3)._expression
+    '0 0 * * 3'
     '''
     
     def __init__(self, day=0):
@@ -109,19 +78,10 @@ class Weekly(CronSchedule):
         
 class Monthly(CronSchedule):
     '''
-    >>> from datetime import datetime
-    
-    >>> schedule = Monthly()
-    >>> schedule.is_overdue(datetime(2000, 2, 1, 0, 0, 0), datetime(2000, 1, 1, 0, 0, 0))
-    True
-    >>> schedule.is_overdue(datetime(2000, 1, 15, 0, 0, 0), datetime(2000, 1, 1, 0, 0, 0))
-    False
-    
-    >>> schedule = Monthly(15)
-    >>> schedule.is_overdue(datetime(2000, 2, 15, 0, 0, 0), datetime(2000, 1, 15, 0, 0, 0))
-    True
-    >>> schedule.is_overdue(datetime(2000, 2, 1, 0, 0, 0), datetime(2000, 1, 15, 0, 0, 0))
-    False
+    >>> Monthly()._expression
+    '0 0 1 * *'
+    >>> Monthly(15)._expression
+    '0 0 15 * *'
     '''
     
     def __init__(self, day=1):
@@ -129,19 +89,10 @@ class Monthly(CronSchedule):
         
 class Yearly(CronSchedule):
     '''
-    >>> from datetime import datetime
-    
-    >>> schedule = Yearly()
-    >>> schedule.is_overdue(datetime(2001, 1, 1, 0, 0, 0), datetime(2000, 1, 1, 0, 0, 0))
-    True
-    >>> schedule.is_overdue(datetime(2000, 7, 1, 0, 0, 0), datetime(2000, 1, 1, 0, 0, 0))
-    False
-    
-    >>> schedule = Yearly(7)
-    >>> schedule.is_overdue(datetime(2001, 7, 1, 0, 0, 0), datetime(2000, 7, 1, 0, 0, 0))
-    True
-    >>> schedule.is_overdue(datetime(2001, 1, 1, 0, 0, 0), datetime(2000, 7, 1, 0, 0, 0))
-    False
+    >>> Yearly()._expression
+    '0 0 1 1 *'
+    >>> Yearly(7)._expression
+    '0 0 1 7 *'
     '''
     
     def __init__(self, month=1):
@@ -149,12 +100,8 @@ class Yearly(CronSchedule):
         
 class Minutes(CronSchedule):
     '''
-    >>> from datetime import datetime
-    >>> schedule = Minutes(5)
-    >>> schedule.is_overdue(datetime(2000, 1, 1, 0, 5, 0), datetime(2000, 1, 1, 0, 0, 0))
-    True
-    >>> schedule.is_overdue(datetime(2000, 1, 1, 0, 3, 0), datetime(2000, 1, 1, 0, 0, 0))
-    False
+    >>> Minutes(5)._expression
+    '*/5 * * * *'
     '''
     
     def __init__(self, interval):
@@ -162,12 +109,8 @@ class Minutes(CronSchedule):
         
 class Hours(CronSchedule):
     '''
-    >>> from datetime import datetime
-    >>> schedule = Hours(4)
-    >>> schedule.is_overdue(datetime(2000, 1, 1, 4, 0, 0), datetime(2000, 1, 1, 0, 0, 0))
-    True
-    >>> schedule.is_overdue(datetime(2000, 1, 1, 3, 0, 0), datetime(2000, 1, 1, 0, 0, 0))
-    False
+    >>> Hours(3)._expression
+    '0 */3 * * *'
     '''
     
     def __init__(self, interval):
@@ -175,12 +118,8 @@ class Hours(CronSchedule):
 
 class Days(CronSchedule):
     '''
-    >>> from datetime import datetime
-    >>> schedule = Days(5)
-    >>> schedule.is_overdue(datetime(2000, 1, 6, 0, 0, 0), datetime(2000, 1, 1, 0, 0, 0))
-    True
-    >>> schedule.is_overdue(datetime(2000, 1, 3, 0, 0, 0), datetime(2000, 1, 1, 0, 0, 0))
-    False
+    >>> Days(5)._expression
+    '0 0 */5 * *'
     '''
     
     def __init__(self, interval):
@@ -188,12 +127,8 @@ class Days(CronSchedule):
         
 class Months(CronSchedule):
     '''
-    >>> from datetime import datetime
-    >>> schedule = Months(3)
-    >>> schedule.is_overdue(datetime(2000, 4, 1, 0, 0, 0), datetime(2000, 1, 1, 0, 0, 0))
-    True
-    >>> schedule.is_overdue(datetime(2000, 3, 1, 0, 0, 0), datetime(2000, 1, 1, 0, 0, 0))
-    False
+    >>> Months(3)._expression
+    '0 0 1 */3 *'
     '''
     
     def __init__(self, interval):

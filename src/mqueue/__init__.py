@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from mqueue import crons, util
+from mqueue import util
 from mqueue.decorators import Task, Cron, Delay
 from mqueue.schedules import Minutely, Hourly, Daily, Weekly, Monthly, Yearly, \
     Minutes, Hours, Days, Months, Weekday

@@ -3,6 +3,7 @@ from datetime import datetime
 from mqueue import decorators
 from mqueue.db import Task
 from mqueue.decorators import Cron
+from mqueue.schedules import Hourly
 from testutil import TestCase, DbTestCase
 
 class DecorateTest(TestCase):
@@ -19,16 +20,16 @@ class DecorateTest(TestCase):
         
 class IsOverdueTest(DbTestCase):
     def test_normal(self):
-        @Cron('*/5 * * * *')
+        @Cron(Hourly)
         def foo():
             pass
         with self.mysql.dao.SessionContext():
-            self.assertTrue(foo.is_overdue(datetime(2000, 1, 2), datetime(2000, 1, 1)))
-            self.assertFalse(foo.is_overdue(datetime(2000, 1, 1, 0, 0, 10), datetime(2000, 1, 1)))
+            self.assertTrue(foo.is_overdue(datetime(2000, 1, 1, 1, 0, 0), datetime(2000, 1, 1)))
+            self.assertFalse(foo.is_overdue(datetime(2000, 1, 1, 0, 30, 0), datetime(2000, 1, 1)))
         
     def test_scheduled(self):
         # set up
-        @Cron('*/5 * * * *')
+        @Cron(Hourly)
         def foo():
             pass
         with self.mysql.dao.create_session() as session:
@@ -40,7 +41,7 @@ class IsOverdueTest(DbTestCase):
             
     def test_no_skip(self):
         # set up
-        @Cron('*/5 * * * *', skip_if_scheduled=False)
+        @Cron(Hourly, skip_if_scheduled=False)
         def foo():
             pass
         with self.mysql.dao.create_session() as session:

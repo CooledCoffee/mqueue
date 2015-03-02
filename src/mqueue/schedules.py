@@ -21,10 +21,10 @@ class CronSchedule(Schedule):
     False
     '''
     
-    def __init__(self, cron):
+    def __init__(self, expression):
         super(CronSchedule, self).__init__()
-        self._expression = cron
-        self._cron = CronTab(cron)
+        self._expression = expression
+        self._cron = CronTab(expression)
         
     def __str__(self):
         return 'CronSchedule(%s)' % self._expression

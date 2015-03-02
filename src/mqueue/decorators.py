@@ -6,6 +6,8 @@ from decorated.base.context import Context, ctx, ContextError
 from loggingd import log_return
 from mqueue import util
 from mqueue.db import Task as TaskModel
+from mqueue.schedules import CronSchedule, Schedule
+import doctest
 import json
 import mqueue
 
@@ -32,11 +34,13 @@ class Task(Function):
         ctx.session.add(model)
             
 class Cron(Task):
+    def __init__(self, *args, **kw):
+        super(Cron, self).__init__(*args, **kw)
+        self._decorate_or_call = self._decorate
+        self._init(*args, **kw)
+            
     def is_overdue(self, now, last):
-        delta = self._schedule.next(last)
-        delta = timedelta(seconds=delta)
-        overdue = last + delta < now
-        if not overdue:
+        if not self._schedule.is_overdue(now, last):
             return False
         if self._skip_if_scheduled:
             cnt = ctx.session.query(TaskModel) \
@@ -52,8 +56,11 @@ class Cron(Task):
     
     def _init(self, schedule, skip_if_scheduled=True):
         super(Cron, self)._init()
-        self._schedule = CronTab(schedule)
+        self._schedule = _parse_schedule(schedule)
         self._skip_if_scheduled = skip_if_scheduled
+        
+    def _is_init_args(self, *args, **kw):
+        return True
     
 class Delay(Context):
     @staticmethod
@@ -67,3 +74,29 @@ class Delay(Context):
         super(Delay, self).__init__()
         self['mqueue.delay'] = delay
         
+def _parse_schedule(schedule):
+    '''
+    >>> from mqueue.schedules import Hourly
+    >>> str(_parse_schedule(Hourly(30)))
+    'CronSchedule(30 * * * *)'
+    >>> str(_parse_schedule(Hourly))
+    'CronSchedule(0 * * * *)'
+    >>> str(_parse_schedule('30 * * * *'))
+    'CronSchedule(30 * * * *)'
+    >>> str(_parse_schedule(30))
+    Traceback (most recent call last):
+    ...
+    Exception: Bad schedule "30".
+    '''
+    if isinstance(schedule, Schedule):
+        return schedule
+    elif callable(schedule):
+        return schedule()
+    elif isinstance(schedule, basestring):
+        return CronSchedule(schedule)
+    else:
+        raise Exception('Bad schedule "%s".' % schedule)
+
+if __name__ == '__main__':
+    doctest.testmod()
+    

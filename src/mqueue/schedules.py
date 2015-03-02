@@ -134,6 +134,15 @@ class Months(CronSchedule):
     def __init__(self, interval):
         super(Months, self).__init__('0 0 1 */%d *' % interval)
 
+class Weekday(CronSchedule):
+    '''
+    >>> Weekday()._expression
+    '0 0 * * 1-5'
+    '''
+    
+    def __init__(self):
+        super(Weekday, self).__init__('0 0 * * 1-5')
+        
 if __name__ == '__main__':
     doctest.testmod()
     

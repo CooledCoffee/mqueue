@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from mqueue import util
-from mqueue.decorators import Task, Cron, Delay
+from mqueue.decorators import Task, Cron, Delay, Async
 from mqueue.schedules import Minutely, Hourly, Daily, Weekly, Monthly, Yearly, \
     Minutes, Hours, Days, Months, Weekday
 
@@ -18,9 +18,10 @@ DAYS = Days
 MONTHS = Months
 WEEKDAY = Weekday
 
-Delay = Delay
+async = Async
 task = Task
 cron = Cron
+Delay = Delay
 
 init = util.init
 start = util.start

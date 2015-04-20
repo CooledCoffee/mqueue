@@ -73,6 +73,18 @@ class Delay(Context):
         super(Delay, self).__init__()
         self['mqueue.delay'] = delay
         
+class Async(Function):
+    def _call(self, *args, **kw):
+        if self._delay is None:
+            return self.enqueue(*args, **kw)
+        else:
+            with Delay(self._delay):
+                return self.enqueue(*args, **kw)
+        
+    def _init(self, delay=None):
+        super(Async, self)._init()
+        self._delay = delay
+        
 def _parse_schedule(schedule):
     '''
     >>> from mqueue.schedules import Hourly

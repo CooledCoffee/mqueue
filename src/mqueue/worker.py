@@ -71,9 +71,9 @@ def _run(task):
 @log_error('Failed to run task {task.id} ({task.name}).', exc_info=True)
 def _try_run(task):
     with db.dao.SessionContext():  # @UndefinedVariable
-        func = util.obj_from_path(task.name)
+        target = util.obj_from_path(task.name)
         args = json.loads(task.args)
-        func(**args)
+        target.execute(**args)
         
 if __name__ == '__main__':
     doctest.testmod()

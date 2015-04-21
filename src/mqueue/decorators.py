@@ -31,7 +31,10 @@ class Task(Function):
             retries=0
         )
         ctx.session.add(model)
-            
+        
+    def execute(self, *args, **kw):
+        return self._call(*args, **kw)
+    
 class Cron(Task):
     def __init__(self, *args, **kw):
         super(Cron, self).__init__(*args, **kw)

@@ -3,7 +3,7 @@ from distutils.core import setup
 
 setup(
     name='mqueue',
-    version='0.4',
+    version='0.4.1',
     author='Mengchen LEE',
     author_email='CooledCoffee@gmail.com',
     classifiers = [

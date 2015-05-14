@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from distutils.core import setup
+import setuptools
 
 setup(
     name='mqueue',
@@ -22,8 +23,7 @@ setup(
         'decorated >= 1.5.2',
         'loggingd',
     ],
-    packages=[
-        'mqueue',
-    ],
+    package_dir={'': 'src'},
+    packages=setuptools.find_packages(where='src'),
     url='https://github.com/CooledCoffee/mqueue/',
 )

@@ -17,11 +17,12 @@ setup(
     ],
     description='Simple queue based on mysql.',
     extras_require={
-        'test': ['fixtures2'],
+        'test': ['fixtures2>=0.1.3'],
     },
     install_requires=[
-        'decorated >= 1.5.2',
+        'decorated>=1.5.2',
         'loggingd',
+        'SQLAlchemy-Dao>=1.2',
     ],
     package_dir={'': 'src'},
     packages=setuptools.find_packages(where='src'),

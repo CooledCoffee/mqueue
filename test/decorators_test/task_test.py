@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from datetime import timedelta
 from mqueue.db import Task as TaskModel
-from mqueue.decorators import Task, Delay
+from mqueue.decorators import Task
 from testutil import DbTestCase
 import json
 
@@ -24,15 +24,23 @@ class EnqueueTest(DbTestCase):
             self.assertEqual('queue1', task.queue)
             self.assertEqual(0, task.retries)
             
-    def test_with_delay(self):
+    def test_timedelta_delay(self):
         # test
-        delay = timedelta(minutes=5)
         with self.mysql.dao.SessionContext():
-            with Delay(delay):
-                foo.enqueue(1, b=3)
+            foo.enqueue_with_options([1], {'b': 3}, {'delay': timedelta(minutes=5)})
         
         # verify
         with self.mysql.dao.create_session() as session:
             task = session.query(TaskModel).one()
-            self.assertAlmostNow(task.eta - delay)
+            self.assertAlmostNow(task.eta - timedelta(minutes=5))
+            
+    def test_int_delay(self):
+        # test
+        with self.mysql.dao.SessionContext():
+            foo.enqueue_with_options([1], {'b': 3}, {'delay': 300})
+        
+        # verify
+        with self.mysql.dao.create_session() as session:
+            task = session.query(TaskModel).one()
+            self.assertAlmostNow(task.eta - timedelta(minutes=5))
             

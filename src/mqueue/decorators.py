@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime, timedelta
 from decorated import Function
-from decorated.base.context import Context, ctx, ContextError
+from decorated.base.context import ctx
 from loggingd import log_return
 from mqueue import util
 from mqueue.db import Task as TaskModel
@@ -18,11 +18,17 @@ class Task(Function):
     def name(self):
         return util.obj_to_path(self._func)
         
-    @log_return('Enqueued task {self.name}.')
     def enqueue(self, *args, **kw):
-        args = self._resolve_args(*args, **kw)
+        self.enqueue_with_options(args, kw, {})
+        
+    @log_return('Enqueued task {self.name}.')
+    def enqueue_with_options(self, args, kwargs, options):
+        args = self._resolve_args(*args, **kwargs)
         args = json.dumps(args)
-        eta = datetime.now() + Delay.value()
+        delay = options.get('delay', timedelta(seconds=0))
+        if isinstance(delay, (int, float)):
+            delay = timedelta(seconds=delay)
+        eta = datetime.now() + delay
         model = TaskModel(
             args=args,
             eta=eta,
@@ -63,28 +69,13 @@ class Cron(Task):
         
     def _is_init_args(self, *args, **kw):
         return True
-    
-class Delay(Context):
-    @staticmethod
-    def value():
-        try:
-            return ctx.dict().get('mqueue.delay', NO_DELAY)
-        except ContextError:
-            return NO_DELAY
-    
-    def __init__(self, delay):
-        super(Delay, self).__init__()
-        self['mqueue.delay'] = delay
         
 class Async(Function):
     def _call(self, *args, **kw):
-        if self._delay is None:
-            return self.enqueue(*args, **kw)
-        else:
-            with Delay(self._delay):
-                return self.enqueue(*args, **kw)
+        options = {'delay': self._delay}
+        self.enqueue_with_options(args, kw, options)
         
-    def _init(self, delay=None):
+    def _init(self, delay=0):
         super(Async, self)._init()
         self._delay = delay
         

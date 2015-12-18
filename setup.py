@@ -4,7 +4,7 @@ import setuptools
 
 setup(
     name='mqueue',
-    version='0.4.3',
+    version='0.4.4',
     author='Mengchen LEE',
     author_email='CooledCoffee@gmail.com',
     classifiers = [

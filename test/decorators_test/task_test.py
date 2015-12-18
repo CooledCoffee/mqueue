@@ -9,7 +9,7 @@ import json
 def foo(a, b=2):
     pass
 
-class EnqueueTest(DbTestCase):
+class EnqueueWithOptionsTest(DbTestCase):
     def test_normal(self):
         # test
         with self.mysql.dao.SessionContext():

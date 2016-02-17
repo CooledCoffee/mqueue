@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime, timedelta
+from decorated import ctx
 from mqueue import worker
 from mqueue.db import Task as TaskModel
 from mqueue.decorators import Task
@@ -12,6 +13,7 @@ def foo(a, b=2):
     if b == 0:
         raise Exception()
     foo.result = a + b
+    foo.task = ctx.task
 
 class PeekTest(DbTestCase):
     def test_queue(self):
@@ -44,6 +46,14 @@ class PeekTest(DbTestCase):
         with self.mysql.dao.SessionContext():
             task = worker._peek()
             self.assertIsNone(task)
+            
+class TryRunTest(DbTestCase):
+    def test_success(self):
+        task = TaskModel(args=json.dumps({'a': 1, 'b': 3}), eta=datetime(2000, 1, 1), name='worker_test.foo', queue='queue1', retries=0)
+        worker._try_run(task)
+        self.assertEqual(4, foo.result)
+        self.assertIsInstance(foo.task['model'], TaskModel)
+        self.assertEqual(foo, foo.task['target'])
             
 class RunTest(DbTestCase):
     def test_success(self):

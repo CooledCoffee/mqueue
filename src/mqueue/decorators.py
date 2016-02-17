@@ -48,7 +48,7 @@ class Cron(Task):
         self._init(*args, **kw)
             
     def is_overdue(self, now, last):
-        if not self._schedule.is_overdue(now, last):
+        if not self.schedule.is_overdue(now, last):
             return False
         if self._skip_if_scheduled:
             cnt = ctx.session.query(TaskModel) \
@@ -64,7 +64,7 @@ class Cron(Task):
     
     def _init(self, schedule, skip_if_scheduled=True):
         super(Cron, self)._init()
-        self._schedule = _parse_schedule(schedule)
+        self.schedule = _parse_schedule(schedule)
         self._skip_if_scheduled = skip_if_scheduled
         
     def _is_init_args(self, *args, **kw):

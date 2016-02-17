@@ -4,6 +4,7 @@ from decorated.base.context import ctx
 from loggingd import log_enter, log_error, log_return
 from mqueue import db, util
 from mqueue.db import Task
+from mqueue.decorators import Cron
 from mqueue.util import Timer
 import doctest
 import json
@@ -70,9 +71,10 @@ def _run(task):
 @log_return('Task {task.id} ({task.name}) succeeded.')
 @log_error('Failed to run task {task.id} ({task.name}).', exc_info=True)
 def _try_run(task):
-    with db.dao.SessionContext():  # @UndefinedVariable
+    with db.dao.SessionContext() as ctx:  # @UndefinedVariable
         target = util.obj_from_path(task.name)
         args = json.loads(task.args)
+        ctx.task = {'model': task, 'target': target}
         target.execute(**args)
         
 if __name__ == '__main__':

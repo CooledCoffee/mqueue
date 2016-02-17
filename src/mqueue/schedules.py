@@ -4,6 +4,9 @@ from datetime import timedelta
 import doctest
 
 class Schedule(object):
+    def __init__(self):
+        self.interval = None
+    
     def is_overdue(self, now, last):
         raise NotImplementedError()
     
@@ -42,6 +45,7 @@ class Minutely(CronSchedule):
     
     def __init__(self):
         super(Minutely, self).__init__('* * * * *')
+        self.interval = 60
         
 class Hourly(CronSchedule):
     '''
@@ -53,6 +57,7 @@ class Hourly(CronSchedule):
     
     def __init__(self, minute=0):
         super(Hourly, self).__init__('%d * * * *' % minute)
+        self.interval = 3600
         
 class Daily(CronSchedule):
     '''
@@ -64,6 +69,7 @@ class Daily(CronSchedule):
     
     def __init__(self, hour=0):
         super(Daily, self).__init__('0 %d * * *' % hour)
+        self.interval = 86400
         
 class Weekly(CronSchedule):
     '''
@@ -75,6 +81,7 @@ class Weekly(CronSchedule):
     
     def __init__(self, day=0):
         super(Weekly, self).__init__('0 0 * * %d' % day)
+        self.interval = 86400 * 7
         
 class Monthly(CronSchedule):
     '''
@@ -106,6 +113,7 @@ class Minutes(CronSchedule):
     
     def __init__(self, interval):
         super(Minutes, self).__init__('*/%d * * * *' % interval)
+        self.interval = 60 * interval
         
 class Hours(CronSchedule):
     '''
@@ -115,6 +123,7 @@ class Hours(CronSchedule):
     
     def __init__(self, interval):
         super(Hours, self).__init__('0 */%d * * *' % interval)
+        self.interval = 3600 * interval
 
 class Days(CronSchedule):
     '''
@@ -124,6 +133,7 @@ class Days(CronSchedule):
     
     def __init__(self, interval):
         super(Days, self).__init__('0 0 */%d * *' % interval)
+        self.interval = 86400 * interval
         
 class Months(CronSchedule):
     '''

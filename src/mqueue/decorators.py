@@ -42,11 +42,11 @@ class Task(Function):
         return self._call(*args, **kw)
     
 class Cron(Task):
-    def __init__(self, *args, **kw):
-        super(Cron, self).__init__(*args, **kw)
-        self._decorate_or_call = self._decorate
-        self._init(*args, **kw)
-            
+    def __init__(self, schedule, skip_if_scheduled=True):
+        super(Cron, self).__init__()
+        self.schedule = _parse_schedule(schedule)
+        self._skip_if_scheduled = skip_if_scheduled
+        
     def is_overdue(self, now, last):
         if not self.schedule.is_overdue(now, last):
             return False
@@ -62,11 +62,6 @@ class Cron(Task):
         crons.append(self)
         return super(Cron, self)._decorate(func)
     
-    def _init(self, schedule, skip_if_scheduled=True):
-        super(Cron, self)._init()
-        self.schedule = _parse_schedule(schedule)
-        self._skip_if_scheduled = skip_if_scheduled
-        
     def _is_init_args(self, *args, **kw):
         return True
         
@@ -83,11 +78,11 @@ def _parse_schedule(schedule):
     '''
     >>> from mqueue.schedules import Hourly
     >>> str(_parse_schedule(Hourly(30)))
-    'CronSchedule(30 * * * *)'
+    '30 * * * *'
     >>> str(_parse_schedule(Hourly))
-    'CronSchedule(0 * * * *)'
+    '0 * * * *'
     >>> str(_parse_schedule('30 * * * *'))
-    'CronSchedule(30 * * * *)'
+    '30 * * * *'
     >>> str(_parse_schedule(30))
     Traceback (most recent call last):
     ...

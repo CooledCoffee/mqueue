@@ -9,6 +9,7 @@ class Cron(Model):
     queue = Column(String, primary_key=True)
     name = Column(String, primary_key=True)
     last = Column(DateTime, nullable=False)
+    schedule = Column(String, nullable=False)
 
 class Task(Model):
     id = Column(Integer, primary_key=True, autoincrement=True)

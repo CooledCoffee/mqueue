@@ -16,7 +16,7 @@ class CronSchedule(Schedule):
     >>> schedule = CronSchedule('0 * * * *')
     
     >>> str(schedule)
-    'CronSchedule(0 * * * *)'
+    '0 * * * *'
     
     >>> schedule.is_overdue(datetime(2000, 1, 1, 1, 0, 0), datetime(2000, 1, 1, 0, 0, 0))
     True
@@ -30,7 +30,7 @@ class CronSchedule(Schedule):
         self._cron = CronTab(expression)
         
     def __str__(self):
-        return 'CronSchedule(%s)' % self._expression
+        return self._expression
         
     def is_overdue(self, now, last):
         delta = self._cron.next(last)

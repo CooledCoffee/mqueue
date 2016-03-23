@@ -2,6 +2,7 @@ create table cron (
 	queue varchar(32),
 	name varchar(128),
 	last datetime not null,
+	schedule varchar(64),
 	primary key (queue, name)
 );
 

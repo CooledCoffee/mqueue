@@ -24,7 +24,6 @@ class SchedulerThread(Timer):
             for cron in decorators.crons:
                 model = session.get_or_create(CronModel, mqueue.QUEUE, cron.name)
                 model.schedule = str(cron.schedule)
-                model.last = date(1900, 1, 1)
     
     @log_error('Scheduler failed.', exc_info=True)
     def _run(self):
@@ -36,6 +35,6 @@ class SchedulerThread(Timer):
 def _check(cron, now):
     with db.dao.SessionContext() as ctx:  # @UndefinedVariable
         model = ctx.session.get(CronModel, mqueue.QUEUE, cron.name)
-        if cron.is_overdue(now, model.last):
+        if model.last is None or cron.is_overdue(now, model.last):
             cron.enqueue()
             model.last = now

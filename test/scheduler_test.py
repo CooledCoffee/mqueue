@@ -50,6 +50,20 @@ class CheckTest(DbTestCase):
             model = session.get(CronModel, 'queue1', 'scheduler_test.foo')
             self.assertEqual(datetime(2000, 1, 1), model.last)
             
+    def test_first_time(self):
+        # set up
+        with self.mysql.dao.create_session() as session:
+            session.add(CronModel(queue='queue1', name='scheduler_test.foo', last=None))
+            
+        # test
+        with self.mox.record():
+            foo.enqueue()
+        with self.mox.replay():
+            scheduler._check(foo, datetime(2000, 1, 1))
+        with self.mysql.dao.create_session() as session:
+            model = session.get(CronModel, 'queue1', 'scheduler_test.foo')
+            self.assertEqual(datetime(2000, 1, 1), model.last)
+            
 class IntervalTest(TestCase):
     def test(self):
         self.useFixture(DateTimeFixture('mqueue.scheduler.datetime', datetime(2000, 1, 1, 0, 0, 10)))

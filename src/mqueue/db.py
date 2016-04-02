@@ -8,7 +8,7 @@ dao = None
 class Cron(Model):
     queue = Column(String, primary_key=True)
     name = Column(String, primary_key=True)
-    last = Column(DateTime, nullable=False)
+    last = Column(DateTime)
     schedule = Column(String, nullable=False)
 
 class Task(Model):

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from datetime import datetime
-from loggingd import log_error, log_and_ignore_error
+from datetime import date, datetime
+from loggingd import log_error
 from mqueue import db, decorators
 from mqueue.db import Cron as CronModel
 from mqueue.util import Timer
@@ -11,7 +11,7 @@ class SchedulerThread(Timer):
     def interval(self):
         return 60 - datetime.now().second + 1
     
-    @log_and_ignore_error('Failed to clean cron table.')
+    @log_error('Failed to sync cron table.', exc_info=True)
     def _init(self):
         valid_names = {cron.name for cron in decorators.crons}
         with db.dao.create_session() as session:  # @UndefinedVariable
@@ -24,6 +24,7 @@ class SchedulerThread(Timer):
             for cron in decorators.crons:
                 model = session.get_or_create(CronModel, mqueue.QUEUE, cron.name)
                 model.schedule = str(cron.schedule)
+                model.last = date(1900, 1, 1)
     
     @log_error('Scheduler failed.', exc_info=True)
     def _run(self):
@@ -35,6 +36,6 @@ class SchedulerThread(Timer):
 def _check(cron, now):
     with db.dao.SessionContext() as ctx:  # @UndefinedVariable
         model = ctx.session.get(CronModel, mqueue.QUEUE, cron.name)
-        if model.last is None or cron.is_overdue(now, model.last):
+        if cron.is_overdue(now, model.last):
             cron.enqueue()
             model.last = now

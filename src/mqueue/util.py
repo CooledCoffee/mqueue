@@ -24,7 +24,7 @@ class Timer(Thread):
             self._sleep(self.interval)
             try:
                 self._run()
-            except:
+            except Exception:
                 log.warn('Timer failed.', exc_info=True)
                 self._sleep(self.error_delay)
             

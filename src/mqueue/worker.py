@@ -47,7 +47,7 @@ def _calc_delay(retries):
 def _peek():
     try:
         task = _try_peek()
-    except:
+    except Exception:
         task = None
     return task
 
@@ -63,7 +63,7 @@ def _run(task):
     try:
         _try_run(task)
         ctx.session.delete(task)
-    except:
+    except Exception:
         task.retries += 1
         task.eta = datetime.now() + _calc_delay(task.retries)
 

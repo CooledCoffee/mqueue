@@ -10,6 +10,7 @@ class Cron(Model):
     name = Column(String, primary_key=True)
     last = Column(DateTime)
     schedule = Column(String, nullable=False)
+CronModel = Cron
 
 class Task(Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -18,4 +19,4 @@ class Task(Model):
     name = Column(String, nullable=False)
     queue = Column(String, nullable=False)
     retries = Column(SmallInteger, nullable=False)
-    
+TaskModel = Task

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime, timedelta
-from mqueue.db import Task as TaskModel
+from mqueue.db import TaskModel
 from mqueue.decorators import Async, Task
 from testutil import DbTestCase
 

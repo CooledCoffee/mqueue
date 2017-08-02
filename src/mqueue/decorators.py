@@ -1,14 +1,15 @@
 # -*- coding: utf-8 -*-
+import doctest
+import json
 from datetime import datetime, timedelta
+
 from decorated import Function
 from decorated.base.context import ctx
 from loggingd import log_return
+
 from mqueue import util
-from mqueue.db import Task as TaskModel
+from mqueue.db import TaskModel
 from mqueue.schedules import CronSchedule, Schedule
-import doctest
-import json
-import mqueue
 
 NO_DELAY = timedelta(minutes=0)
 crons = []
@@ -33,7 +34,7 @@ class Task(Function):
             args=args,
             eta=eta,
             name=self.name,
-            queue=mqueue.QUEUE,
+            queue=util.QUEUE,
             retries=0
         )
         ctx.session.add(model)
@@ -70,7 +71,7 @@ class Async(Function):
         options = {'delay': self._delay}
         self.enqueue_with_options(args, kw, options)
         
-    def _init(self, delay=0):
+    def _init(self, delay=0): # pylint: disable=arguments-differ
         super(Async, self)._init()
         self._delay = delay
         

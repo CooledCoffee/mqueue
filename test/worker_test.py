@@ -2,7 +2,7 @@
 from datetime import datetime, timedelta
 from decorated import ctx
 from mqueue import worker
-from mqueue.db import Task as TaskModel
+from mqueue.db import TaskModel
 from mqueue.decorators import Task
 from mqueue.worker import WorkerThread
 from testutil import DbTestCase

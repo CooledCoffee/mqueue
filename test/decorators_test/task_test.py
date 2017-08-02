@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from datetime import timedelta
-from mqueue.db import Task as TaskModel
+from mqueue.db import TaskModel
 from mqueue.decorators import Task
 from testutil import DbTestCase
 import json

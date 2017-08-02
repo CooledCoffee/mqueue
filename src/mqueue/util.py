@@ -1,13 +1,11 @@
 # -*- coding: utf-8 -*-
-from decorated.util import modutil
-from loggingd import log_enter, log_return, log_error
-from threading import Thread
-import doctest
 import importlib
-import loggingd
-import signal
 import time
+from threading import Thread
 
+import loggingd
+
+QUEUE = None
 log = loggingd.getLogger(__name__)
 
 class Timer(Thread):
@@ -35,8 +33,8 @@ class Timer(Thread):
     def _init(self):
         pass
     
-    def _run(self):
-        raise NotImplemented()
+    def _run(self): # pylint: disable=no-self-use
+        raise NotImplementedError()
     
     def _sleep(self, seconds):
         integer, fraction = int(seconds), seconds % 1
@@ -67,38 +65,5 @@ def obj_to_path(obj):
     return obj.__module__ + '.' + obj.__name__
 
 def init(queue):
-    import mqueue
-    mqueue.QUEUE = queue
-
-@log_enter('Starting queue ...')
-@log_return('Queue stopped.')
-@log_error('Queue failed.', exc_info=True)
-def start(queue, dao):
-    from mqueue import db
-    from mqueue.scheduler import SchedulerThread
-    from mqueue.worker import WorkerThread
-    
-    init(queue)
-    db.dao = dao
-    modutil.load_tree('tasks')
-    
-    worker = WorkerThread()
-    worker.start()
-    scheduler = SchedulerThread()
-    scheduler.start()
-    
-    _wait_for_exit()
-    
-    worker.stop()
-    scheduler.stop()
-    
-def _wait_for_exit():
-    def _exit(*args):
-        pass
-    signal.signal(signal.SIGINT, _exit)
-    signal.signal(signal.SIGTERM, _exit)
-    signal.pause()
-
-if __name__ == '__main__':
-    doctest.testmod()
-    
+    global QUEUE # pylint: disable=global-statement
+    QUEUE = queue

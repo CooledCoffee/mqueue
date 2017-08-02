@@ -4,7 +4,7 @@ from decorated.base.dict import Dict
 from fixtures2 import DateTimeFixture
 from fixtures2.mox import MoxFixture
 from mqueue import scheduler
-from mqueue.db import Cron as CronModel
+from mqueue.db import CronModel
 from mqueue.decorators import Cron
 from mqueue.scheduler import SchedulerThread
 from mqueue.schedules import Hourly, Minutely, Daily

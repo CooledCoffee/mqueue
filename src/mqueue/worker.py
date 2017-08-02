@@ -1,14 +1,13 @@
 # -*- coding: utf-8 -*-
+import json
 from datetime import datetime, timedelta
+
 from decorated.base.context import ctx
 from loggingd import log_enter, log_error, log_return
+
 from mqueue import db, util
 from mqueue.db import Task
-from mqueue.decorators import Cron
 from mqueue.util import Timer
-import doctest
-import json
-import mqueue
 
 DELAY = 3
 
@@ -54,7 +53,7 @@ def _peek():
 @log_error('Failed to peek queue.', exc_info=True)
 def _try_peek():
     return ctx.session.query(Task) \
-            .filter(Task.queue == mqueue.QUEUE) \
+            .filter(Task.queue == util.QUEUE) \
             .filter(Task.eta <= datetime.now()) \
             .order_by(Task.eta) \
             .first()
@@ -71,12 +70,8 @@ def _run(task):
 @log_return('Task {task.id} ({task.name}) succeeded.')
 @log_error('Failed to run task {task.id} ({task.name}).', exc_info=True)
 def _try_run(task):
-    with db.dao.SessionContext() as ctx:  # @UndefinedVariable
+    with db.dao.SessionContext() as context:
         target = util.obj_from_path(task.name)
         args = json.loads(task.args)
-        ctx.task = {'model': task, 'target': target}
+        context.task = {'model': task, 'target': target}
         target.execute(**args)
-        
-if __name__ == '__main__':
-    doctest.testmod()
-    

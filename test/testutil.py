@@ -12,7 +12,7 @@ class TestCase(TestCase):
 class DbTestCase(TestCase):
     def setUp(self):
         super(DbTestCase, self).setUp()
-        self.patches.patch('mqueue.QUEUE', 'queue1')
+        self.patches.patch('mqueue.util.QUEUE', 'queue1')
         path = os.path.join(os.path.dirname(__file__), 'queue.sql')
         fixture = MysqlFixture(host='test', scripts=path, daos=['mqueue.db.dao'])
         self.mysql = self.useFixture(fixture)

@@ -33,7 +33,7 @@ class CronSchedule(Schedule):
         return self._expression
         
     def is_overdue(self, now, last):
-        delta = self._cron.next(last)
+        delta = self._cron.next(last, default_utc=False)
         delta = timedelta(seconds=delta)
         return last + delta <= now
     

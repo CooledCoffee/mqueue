@@ -30,14 +30,14 @@ init = util.init
 @log_enter('Starting queue ...')
 @log_return('Queue stopped.')
 @log_error('Queue failed.', exc_info=True)
-def start(queue, dao):
+def start(queue, dao, package='tasks'):
     from mqueue import db
     from mqueue.scheduler import SchedulerThread
     from mqueue.worker import WorkerThread
 
     init(queue)
     db.dao = dao
-    modutil.load_tree('tasks')
+    modutil.load_tree(package)
 
     worker = WorkerThread()
     worker.start()

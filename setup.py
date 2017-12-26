@@ -4,9 +4,8 @@ import setuptools
 
 setup(
     name='mqueue',
-    version='0.4.9',
+    version='0.4.10',
     author='Mengchen LEE',
-    author_email='CooledCoffee@gmail.com',
     classifiers = [
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
